@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import * as d3 from "d3";
 import {
   Box,
@@ -10,48 +10,47 @@ import {
 } from "@mui/material";
 
 const CheckingAccountChart = () => {
-  const [data, setData] = useState([20, 30, 60, 40, 15, 40, 20, 10, 30, 40]);
   const [manage, setManage] = useState("manage");
   const [month, setMonth] = useState("february");
   const svgRef = useRef();
 
-  const xLabels = ["09", "10", "11", "12", "13", "14", "15", "16", "17", "18"];
+  // Use useMemo to memoize the xLabels array
+  const xLabels = useMemo(() => ["09", "10", "11", "12", "13", "14", "15", "16", "17", "18"], []);
+
+  const memoizedData = useMemo(() => {
+    return xLabels.map(() => Math.floor(Math.random() * 100));
+  }, [xLabels]); // Include 'xLabels' as a dependency
 
   useEffect(() => {
-    const randomizeData = () => {
-      const newData = xLabels.map(() => Math.floor(Math.random() * 100));
-      setData(newData);
-    };
-  
     const width = 750;
     const height = 200;
     const margin = { top: 20, right: 10, bottom: 35, left: 40 };
     const svg = d3.select(svgRef.current).attr("width", width).attr("height", height);
-  
+
     const xScale = d3
       .scalePoint()
       .domain(xLabels)
       .range([margin.left, width - margin.right]);
     const yScale = d3
       .scaleLinear()
-      .domain([0, d3.max(data)])
+      .domain([0, d3.max(memoizedData)])
       .range([height - margin.bottom, margin.top]);
-  
+
     const generateScaleLine = d3
       .line()
       .x((d, i) => xScale(xLabels[i]))
       .y((d) => yScale(d))
       .curve(d3.curveCardinal);
-  
+
     svg
       .selectAll("path")
-      .data([data])
+      .data([memoizedData])
       .join("path")
       .attr("d", (d) => generateScaleLine(d))
       .attr("fill", "none")
       .attr("stroke", "#58af7e")
       .attr("stroke-width", 2);
-  
+
     svg
       .selectAll(".x-axis-label")
       .data(xLabels)
@@ -65,9 +64,7 @@ const CheckingAccountChart = () => {
       .style("font-weight", "600")
       .style("fill", "#d3d4d5")
       .text((d) => d);
-  
-    randomizeData(); // Randomize data when 'manage' or 'month' changes
-  }, [ month]);
+  }, [memoizedData, xLabels]);
 
   return (
     <Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
@@ -75,25 +72,23 @@ const CheckingAccountChart = () => {
         <Typography variant="h6" sx={{ fontWeight: "bold", fontSize: "16px" }}>
           Checking Account
         </Typography>
-       <Select
-  variant="outlined"
-  value={manage}
-  onChange={(event) => setManage(event.target.value)}
-  style={{ marginLeft: "auto", fontSize: 12 }}
-  size="small"
->
-  <MenuItem value="manage" style={{ fontSize: 12 }}>
-    Manage
-  </MenuItem>
-  <MenuItem value="view" style={{ fontSize: 12 }}>
-    View
-  </MenuItem>
-  <MenuItem value="edit" style={{ fontSize: 12 }}>
-    Edit
-  </MenuItem>
-</Select>
-
-
+        <Select
+          variant="outlined"
+          value={manage}
+          onChange={(event) => setManage(event.target.value)}
+          style={{ marginLeft: "auto", fontSize: 12 }}
+          size="small"
+        >
+          <MenuItem value="manage" style={{ fontSize: 12 }}>
+            Manage
+          </MenuItem>
+          <MenuItem value="view" style={{ fontSize: 12 }}>
+            View
+          </MenuItem>
+          <MenuItem value="edit" style={{ fontSize: 12 }}>
+            Edit
+          </MenuItem>
+        </Select>
         <Select
           variant="outlined"
           value={month}
@@ -118,7 +113,6 @@ const CheckingAccountChart = () => {
           flex: 1,
           width: "100%",
           display: "flex",
-          // justifyContent: "center",
           alignItems: "center",
         }}
       >

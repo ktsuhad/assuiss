@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import * as d3 from "d3";
 import {
   Box,
@@ -16,14 +16,15 @@ const InvoiceChart = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [file, setFile] = useState(null); 
 
-  const data = [
+  const data = useMemo(() => [
+
     { label: 'Older', value: 20 },
     { label: 'Jan 01 - 08', value: 40 },
     { label: 'Jan 09 - 16', value: 60 },
     { label: 'Jan 17 - 24', value: 45 },
     { label: 'Jan 25 - 31', value: 50 },
     { label: 'future', value: 40 },
-  ];
+  ], []);
 
   useEffect(() => {
     const width = 750;

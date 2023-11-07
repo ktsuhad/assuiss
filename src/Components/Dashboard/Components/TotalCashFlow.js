@@ -1,19 +1,18 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import * as d3 from "d3";
 import { Box, Divider, Toolbar, Typography } from "@mui/material";
 
 const TotalCashFlow = () => {
   const svgRef = useRef(null);
 
-  const data = [
+  const data = useMemo(() => [
     { label: "August", in: 20, out: 10 },
-
     { label: "September", in: 40, out: 30 },
     { label: "October", in: 60, out: 40 },
     { label: "November", in: 45, out: 25 },
     { label: "December", in: 50, out: 30 },
     { label: "January", in: 40, out: 25 },
-  ];
+  ], []);
 
   useEffect(() => {
     const width = 750;
