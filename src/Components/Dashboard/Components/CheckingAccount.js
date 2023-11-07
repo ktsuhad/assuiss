@@ -15,11 +15,18 @@ const CheckingAccountChart = () => {
   const svgRef = useRef();
 
   // Use useMemo to memoize the xLabels array
-  const xLabels = useMemo(() => ["09", "10", "11", "12", "13", "14", "15", "16", "17", "18"], []);
+  const xLabels = useMemo(
+    () => ["09", "10", "11", "12", "13", "14", "15", "16", "17", "18"],
+    []
+  );
 
-  const memoizedData = useMemo(() => {
-    return xLabels.map(() => Math.floor(Math.random() * 100));
-  }, [xLabels]); // Include 'xLabels' as a dependency
+  const [memoizedData, setMemoizedData] = useState(
+    xLabels.map(() => Math.floor(Math.random() * 100))
+  );
+
+  useEffect(() => {
+    setMemoizedData(xLabels.map(() => Math.floor(Math.random() * 100)));
+  }, [month, xLabels]);
 
   useEffect(() => {
     const width = 750;
